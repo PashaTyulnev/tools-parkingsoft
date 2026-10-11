@@ -68,6 +68,13 @@ def fetch_offers(
     return _parse_html(resp.text)
 
 
+def _parse_displayed_price(block: str) -> float | None:
+    m = re.search(r'([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2})\s*(?:&nbsp;)?€', block)
+    if not m:
+        return None
+    return float(m.group(1).replace(".", "").replace(",", "."))
+
+
 def _parse_html(html: str) -> list[dict]:
     """Parse the HTML response and return offer list."""
     blocks = re.split(r"(?=<div class=\"offerblock )", html)
@@ -77,11 +84,13 @@ def _parse_html(html: str) -> list[dict]:
         if "bookable" not in block:
             continue
 
-        # Price in cents via data attribute (most reliable)
-        price_m = re.search(r'data-sort-price="([0-9.]+)"', block)
-        if not price_m:
-            continue
-        price = round(float(price_m.group(1)) / 100, 2)
+        # Displayed price ("1.234,56 €") – data-sort-price switched from cents to euros in Oct 2026
+        price = _parse_displayed_price(block)
+        if price is None:
+            price_m = re.search(r'data-sort-price="([0-9.]+)"', block)
+            if not price_m:
+                continue
+            price = round(float(price_m.group(1)), 2)
 
         # Provider name from first image alt
         name_m = re.search(r'class="[^"]*responsive-offer-img[^"]*"[^>]*alt="([^"]+)"', block)
@@ -98,9 +107,12 @@ def _parse_html(html: str) -> list[dict]:
         elif "compshuttle" in block:
             service_type = "Shuttle Service"
 
-        # Rating
-        rating_m = re.search(r'data-sort-rating="([0-9.]+)"', block)
-        rating = round(float(rating_m.group(1)), 2) if rating_m else None
+        # Rating from aria-label "4,9 von 5 Sternen (208)"
+        rating, num_reviews = None, None
+        rating_m = re.search(r'aria-label="([0-9]+(?:,[0-9]+)?) von 5 Sternen(?: \(([0-9.]+)\))?"', block)
+        if rating_m:
+            rating = float(rating_m.group(1).replace(",", "."))
+            num_reviews = int(rating_m.group(2).replace(".", "")) if rating_m.group(2) else None
 
         # Booking slug
         link_m = re.search(r'/parken-reservieren/([a-z0-9-]+)', block)
@@ -112,7 +124,7 @@ def _parse_html(html: str) -> list[dict]:
             "price": price,
             "slug": book_slug,
             "avg_score": rating,
-            "num_reviews": None,
+            "num_reviews": num_reviews,
         })
 
     return offers
