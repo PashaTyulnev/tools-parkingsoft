@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parkpreis-Vergleich</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚗 Parkpreis-Vergleich</h1>
+      <p class="subtitle">Konkurrenzanalyse für Ihre Preisgestaltung</p>
+    </header>
+
+    <section class="controls card">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="location">Standort</label>
+          <select id="location">
+            <option value="parken-flughafen-frankfurt">Frankfurt Flughafen</option>
+            <option value="parken-flughafen-muenchen">München Flughafen</option>
+            <option value="parken-flughafen-duesseldorf">Düsseldorf Flughafen</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="arrival_date">Ankunftsdatum</label>
+          <input type="date" id="arrival_date" />
+        </div>
+        <div class="form-group">
+          <label for="arrival_time">Ankunftszeit</label>
+          <input type="time" id="arrival_time" value="08:00" />
+        </div>
+        <div class="form-group">
+          <label for="departure_time">Abfahrtszeit</label>
+          <input type="time" id="departure_time" value="12:00" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group portals-group">
+          <label>Portale</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="portal-parkos" value="parkos" checked />
+              <span>Parkos.de</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="portal-parkenflughafen" value="parkenflughafen" checked />
+              <span>Parkenflughafen.de</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="portal-ichparkebilliger" value="ichparkebilliger" checked />
+              <span>IchParkeBilliger.de</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <button id="btn-compare" class="btn-primary">
+            <span id="btn-text">Jetzt vergleichen</span>
+            <span id="btn-spinner" class="spinner hidden"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div id="error-box" class="error-box hidden"></div>
+
+    <section id="results-section" class="hidden">
+
+      <!-- Own providers reference bar (always visible at top) -->
+      <div id="own-providers-bar" class="card own-providers-bar hidden"></div>
+
+      <div class="summary-grid" id="summary-grid"></div>
+
+      <!-- Chart: Min/Max total price -->
+      <div class="card chart-card">
+        <h2>Min / Max Gesamtpreis nach Aufenthaltsdauer (1–31 Tage)</h2>
+        <p class="chart-hint">Grün = günstigster Anbieter · Rot = teuerster Anbieter</p>
+        <div class="chart-wrapper">
+          <canvas id="chart-total-price"></canvas>
+        </div>
+      </div>
+
+      <!-- Provider Table -->
+      <div class="card">
+        <h2>Anbieter-Detail</h2>
+        <div class="day-tabs" id="day-tabs"></div>
+        <div id="provider-table-container"></div>
+      </div>
+
+    </section>
+  </div>
+
+  <script src="app.js?v=3"></script>
+</body>
+</html>

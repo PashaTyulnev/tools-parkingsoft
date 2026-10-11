@@ -1,0 +1,13 @@
+# Nur Projektcode versionieren, Virtualmin-Verzeichnisse ignorieren
+/*
+!/.gitignore
+!/backend/
+!/public_html/
+
+backend/cache/
+__pycache__/
+*.pyc
+
+public_html/icon/
+public_html/awstats-icon
+public_html/awstatsicons
