@@ -11,3 +11,4 @@ __pycache__/
 public_html/icon/
 public_html/awstats-icon
 public_html/awstatsicons
+backend/preload.log

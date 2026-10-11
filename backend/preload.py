@@ -17,7 +17,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
     handlers=[
-        logging.FileHandler("/var/log/parkingsoft-preload.log"),
+        logging.FileHandler(os.environ.get("PRELOAD_LOG", "/var/log/parkingsoft-preload.log")),
         logging.StreamHandler(sys.stdout),
     ],
 )
